@@ -2,11 +2,8 @@ from cloudns_sdk import ClouDNSAPI
 from cloudns_sdk.validations import validate
 
 id = 22889
-key = 'srizana'
+key = 'komal123'
 
-domain_name = "demosrizana.dns-dynamic.net"
-zone_type = "master"
-name_servers = ["pns1.cloudns.net", "pns2.cloudns.net"]
 api = ClouDNSAPI(id, key)
 
 
@@ -31,18 +28,13 @@ params = {
 
 
 
+domain_name = "jointcove.com"
+zone_type = "master"
+server='ns1.dnsowl.com'
 
-
-res = api.add_record(
-    domain_name="demosrizana.dns-dynamic.net",
-    record_type="A",
-    host="test",
-    record="1.1.1.1",
-    ttl=3600,
-    enabled=True
-)
-
-
+res1 = api.login()
+print(res1)
+res = api.import_via_transfer(domain_name, server)
 print(res)
 
 

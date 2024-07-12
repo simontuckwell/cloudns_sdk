@@ -7,7 +7,7 @@ from .utils import process_params
 class ClouDNSAPI:
     BASE_URL = "https://api.cloudns.net"
     RATE_LIMIT_PER_SECOND = 20
-    VALID_ZONE_TYPES = ['domain', 'reverse', 'parked']
+    VALID_ZONE_TYPES = ['domain', 'reverse', 'parked', 'master', 'slave', 'geodns']
 
     def __init__(self, auth_id=None, auth_password=None):
         self.auth_id = auth_id
@@ -73,7 +73,9 @@ class ClouDNSAPI:
         if master_ip:
             params.append(('master-ip', master_ip))
 
-        return self.make_request('dns/register.json', method='POST', params=params)
+        print(params)
+
+        return self.make_request('dns/register.json', method='GET', params=params)
 
     def delete_domain_zone(self, domain_name):
         params = self._auth_params({'domain-name': domain_name})
@@ -273,6 +275,103 @@ class ClouDNSAPI:
             'domain-name': domain_name,
             'record-id': record_id
         })
+
+        return self.make_request('dns/get-dynamic-url.json', method='GET', params=params)
+
+
+    def disable_dynamic_url(self, domain_name, record_id):
+        params = self._auth_params({
+            'domain-name': domain_name,
+            'record-id': record_id
+        })
+
+        return self.make_request('dns/disable-dynamic-url.json', method='POST', params=params)
+
+    def change_dynamic_url(self, domain_name, record_id):
+        params = self._auth_params({
+            'domain-name': domain_name,
+            'record-id': record_id
+        })
+
+        return self.make_request('dns/change-dynamic-url.json', method='POST', params=params)
+
+
+    def get_dynamic_url_history(self, domain_name, record_id, rows_per_page=20, page=1):
+        params = self._auth_params({
+            'domain-name': domain_name,
+            'record-id': record_id,
+            'rows-per-page': rows_per_page,
+            'page': page
+        })
+
+        return self.make_request('dns/get-dynamic-url-history.json', method='GET', params=params)
+
+
+    def get_dynamic_url_history_pages(self, domain_name, record_id, rows_per_page=20):
+        params = self._auth_params({
+            'domain-name': domain_name,
+            'record-id': record_id,
+            'rows-per-page': rows_per_page
+        })
+
+        return self.make_request('dns/get-dynamic-url-history-pages.json', method='GET', params=params)
+
+
+    def import_via_transfer(self, domain_name, server):
+        params = self._auth_params({
+            'domain-name': domain_name,
+            'server': server
+        })
+        return self.make_request('dns/axfr-import.json', method='GET', params=params)
+
+
+    def change_record_status(self, domain_name, record_id, status=True):
+        params = self._auth_params({
+            'domain-name': domain_name,
+            'record-id': record_id,
+            'status': 1 if status else 0
+        })
+        return self.make_request('dns/change-record-status.json', method='GET', params=params)
+
+
+    def reset_soa_details(self, domain_name):
+        params = self._auth_params({'domain-name': domain_name})
+        return self.make_request('dns/reset-soa.json', method='GET', params=params)
+
+
+    def add_master_server(self, domain_name, master_ip):
+        params = self._auth_params({'domain-name': domain_name, 'master-ip': master_ip})
+        return self.make_request('dns/add-master-server.json', method='GET', params=params)
+
+
+    def delete_master_server(self, domain_name, master_id):
+        params = self._auth_params({'domain-name': domain_name, 'master-id': master_id})
+        return self.make_request('dns/delete-master-server.json', method='GET', params=params)
+
+
+    def list_master_servers(self, domain_name):
+        params = self._auth_params({'domain-name': domain_name})
+        return self.make_request('dns/master-servers.json', method='GET', params=params)
+
+    def list_transfer_servers(self, domain_name):
+        params = self._auth_params({'domain-name': domain_name})
+        return self.make_request('dns/available-secondary-servers.json', method='GET', params=params)
+
+
+    def get_soa_of_server(self, domain_name, server_id):
+        params = self._auth_params({'domain-name': domain_name, 'server-id': server_id})
+        return self.make_request('dns/get-soa-secondary-zone.json', method='GET', params=params)
+
+
+    def export_slave_zone(self, domain_name):
+        params = self._auth_params({'domain-name': domain_name})
+        return self.make_request('dns/export-secondary-zone.json', method='GET', params=params)
+
+
+
+
+
+
 
 
 
