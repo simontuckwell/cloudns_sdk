@@ -2,14 +2,19 @@ import requests
 from .rate_limit import rate_limited
 from .exceptions import ClouDNSAPIException
 from .validations import validate
+from .utils import process_params
 
 class ClouDNSAPI:
     BASE_URL = "https://api.cloudns.net"
     RATE_LIMIT_PER_SECOND = 20
+    VALID_ZONE_TYPES = ['domain', 'reverse', 'parked']
 
     def __init__(self, auth_id=None, auth_password=None):
         self.auth_id = auth_id
         self.auth_password = auth_password
+
+    def is_valid_zone_type(self, zone_type):
+        return zone_type in self.VALID_ZONE_TYPES
 
     @rate_limited(RATE_LIMIT_PER_SECOND)
     def make_request(self, endpoint, method='GET', params=None, data=None):
@@ -71,11 +76,7 @@ class ClouDNSAPI:
         return self.make_request('dns/register.json', method='POST', params=params)
 
     def delete_domain_zone(self, domain_name):
-        params = {
-            'auth-id': self.auth_id,
-            'auth-password': self.auth_password,
-            'domain-name': domain_name
-        }
+        params = self._auth_params({'domain-name': domain_name})
         return self.make_request('dns/delete.json', method='POST', params=params)
 
     def list_zones(self, page=1, rows_per_page=20, search=None, group_id=None, has_cloud_domains=None):
@@ -116,8 +117,8 @@ class ClouDNSAPI:
         params = self._auth_params({'domain-name': domain_name})
         return self.make_request('dns/is-updated.json', method='GET', params=params)
 
-    def change_zone_status(self, domain_name, status=None):
-        params = self._auth_params({'domain-name': domain_name, 'status': status})
+    def change_zone_status(self, domain_name, status=True):
+        params = self._auth_params({'domain-name': domain_name, 'status': 1 if status else 0})
         return self.make_request('dns/change-status.json', method='POST', params=params)
 
     def get_records_stats(self):
@@ -156,7 +157,10 @@ class ClouDNSAPI:
         valid, error = validate(record_data)
 
         if valid:
-            params = self._auth_params({record_data})
+
+            params = self._auth_params()
+            params.update(process_params(record_data))
+
             return self.make_request('dns/add-record.json', method='POST', data=params)
         else:
             raise ValueError(f"Error: {error}")
@@ -176,7 +180,10 @@ class ClouDNSAPI:
         valid, error = validate(record_data)
 
         if valid:
-            params = self._auth_params({record_data})
+
+            params = self._auth_params()
+            params.update(process_params(record_data))
+
             return self.make_request('dns/mod-record.json', method='POST', data=params)
         else:
             raise ValueError(f"Error: {error}")
@@ -210,4 +217,66 @@ class ClouDNSAPI:
             params.append(('delete-existing-records', 0))
 
         return self.make_request('dns/records-import.json', method='POST', params=params)
+
+
+    def export_records_in_bind(self, domain_name):
+        params = self._auth_params({'domain-name': domain_name})
+        return self.make_request('dns/records-export.json', method='POST', params=params)
+
+    def get_available_record_types(self, zone_type):
+        if not self.is_valid_zone_type(zone_type):
+            raise ValueError(f"Invalid zone type: {zone_type}. Expected one of {', '.join(self.VALID_ZONE_TYPES)}.")
+
+        params = self._auth_params({'zone-type': zone_type})
+
+        return self.make_request('dns/get-available-record-types.json', method='GET', params=params)
+
+
+    def get_available_ttl(self, domain_name):
+        params = self._auth_params({'domain-name': domain_name})
+        return self.make_request('dns/get-available-ttl.json', method='GET', params=params)
+
+
+    def get_records_count(self, domain_name):
+        params = self._auth_params({'domain-name': domain_name})
+        return self.make_request('dns/get-records-count.json', method='GET', params=params)
+
+
+    def get_soa_details(self, domain_name):
+        params = self._auth_params({'domain-name': domain_name})
+        return self.make_request('dns/soa-details.json', method='GET', params=params)
+
+
+    def modify_soa_details(self, domain_name, primary_ns, admin_email='', refresh=7200, retry=7200, expire=2419200, default_ttl=3600):
+        record_data = {key: value for key, value in locals().items() if key != 'kwargs' and value is not None}
+
+        valid, error = validate(record_data)
+        if valid:
+            params = self._auth_params({
+                'domain-name': domain_name,
+                'primary-ns': primary_ns,
+                'admin-email': admin_email,
+                'refresh': refresh,
+                'retry': retry,
+                'expire': expire,
+                'default-ttl': default_ttl
+            })
+            return self.make_request('dns/modify-soa.json', method='POST', data=params)
+
+        else:
+            raise ValueError(f"Error: {error}")
+
+
+
+    def get_dynamic_url(self, domain_name, record_id):
+        params = self._auth_params({
+            'domain-name': domain_name,
+            'record-id': record_id
+        })
+
+
+
+
+
+
 

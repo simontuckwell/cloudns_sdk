@@ -7,10 +7,10 @@ key = 'srizana'
 domain_name = "demosrizana.dns-dynamic.net"
 zone_type = "master"
 name_servers = ["pns1.cloudns.net", "pns2.cloudns.net"]
-# api = ClouDNSAPI(id, key)
-# response = api.get_record(domain_name, record_id='509121146')
-#
-# print("Response:", response)
+api = ClouDNSAPI(id, key)
+
+
+
 
 
 params = {
@@ -29,24 +29,12 @@ params = {
     "caa_type": 'issuekl',
 }
 
-def mock_dns_record(domain_name, record_type, host, record, ttl, priority=None, **kwargs):
-
-
-    # Prepare the DNS record data
-    record_data = {key: value for key, value in locals().items() if key != 'kwargs' and value is not None}
-    record_data.update(kwargs)
-
-    result, msg = validate(record_data)
-
-    if (result):
-        print('Success')
-    else:
-        print(msg)
 
 
 
-mock_dns_record(
-    domain_name="example.com",
+
+res = api.add_record(
+    domain_name="demosrizana.dns-dynamic.net",
     record_type="TLSA",
     host="_443._tcp.example.com",
     record="1 1 1 abcdef",
@@ -62,6 +50,8 @@ mock_dns_record(
     enabled=True
 )
 
+
+print(res)
 
 
 

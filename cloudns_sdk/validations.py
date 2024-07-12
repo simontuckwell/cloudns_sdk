@@ -144,6 +144,18 @@ def validate_tlsa_selection(value):
     if value not in {0, 1}:
         raise ValueError("tlsa_selector must be 0 or 1.")
 
+def validate_refresh(value):
+    validate_optional_integer(value, "refresh", 1200, 43200)
+
+def validate_retry(value):
+    validate_optional_integer(value, "retry", 180, 2419200)
+
+def validate_expiry(value):
+    validate_optional_integer(value, "expiry", 1209600, 2419200)
+
+def validate_default_ttl(value):
+    validate_optional_integer(value, "default_ttl", 60, 2419200)
+
 def validate_tlsa_usage(value):
     validate_integer(value, "tlsa_usage")
     if value not in {0, 1, 2, 3}:
@@ -167,12 +179,11 @@ def validate(params):
         "frame": validate_frame,
         "frame_title": lambda v: validate_optional_string(v, "frame-title"),
         "redirect_type": validate_redirect_type,
-        "mail": lambda v: validate_email(v, "mail"),
+        "admin_email": lambda v: validate_email(v, "admin_email"),
         "txt": lambda v: validate_optional_string(v, "txt"),
         "algorithm": validate_algorithm,
         "fptype": validate_fptype,
         "status": validate_status,
-        "geodns-location": validate_optional_integer,
         "geodns-code": validate_geodns_code,
         "caa_flag": validate_caa_flag,
         "caa_type": validate_caa_type,
@@ -180,6 +191,11 @@ def validate(params):
         "tlsa_usage": validate_tlsa_usage,
         "tlsa_selector": validate_tlsa_selection,
         "tlsa_matching_type": validate_tlsa_matching_type,
+        "refresh": validate_refresh,
+        "retry": validate_retry,
+        "expiry": validate_expiry,
+        "default_ttl": validate_default_ttl,
+        "primary_ns": validate_domain_name
     }
 
     error_messages = []
