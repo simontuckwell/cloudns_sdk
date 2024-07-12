@@ -158,8 +158,8 @@ class ClouDNSAPI:
 
         if valid:
 
-            params = self._auth_params()
-            params.update(process_params(record_data))
+            cred = self._auth_params()
+            params = process_params(record_data, cred)
 
             return self.make_request('dns/add-record.json', method='POST', data=params)
         else:
@@ -181,10 +181,10 @@ class ClouDNSAPI:
 
         if valid:
 
-            params = self._auth_params()
-            params.update(process_params(record_data))
-
+            cred = self._auth_params()
+            params = process_params(record_data, cred)
             return self.make_request('dns/mod-record.json', method='POST', data=params)
+
         else:
             raise ValueError(f"Error: {error}")
 

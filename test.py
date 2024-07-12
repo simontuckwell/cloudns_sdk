@@ -35,18 +35,10 @@ params = {
 
 res = api.add_record(
     domain_name="demosrizana.dns-dynamic.net",
-    record_type="TLSA",
-    host="_443._tcp.example.com",
-    record="1 1 1 abcdef",
+    record_type="A",
+    host="test",
+    record="1.1.1.1",
     ttl=3600,
-    priority=10,
-    tlsa_usage=0,
-    tlsa_selector=1,
-    tlsa_matching_type=2,
-    algorithm="RSA",
-    fptype=1,
-    caa_type='issuewild',  # Corrected CAA type
-    comment="This is a mock DNS record",
     enabled=True
 )
 
