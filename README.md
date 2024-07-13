@@ -22,7 +22,7 @@ from cloudns_sdk import ClouDNSAPI
 # Initialize the API client
 api = ClouDNSAPI(auth_id, auth_password)
 
-# Example: Get all DNS records
+# Example: Check login status
 response = api.login()
 print(response)
 ```
