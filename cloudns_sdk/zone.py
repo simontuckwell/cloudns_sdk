@@ -6,6 +6,10 @@ from .slave import SlaveZoneAPI
 from .parked import ParkedAPI
 from .cloud import CloudDomainAPI
 from .geodns import GeoDNSAPI
+from .groups import GroupsAPI
+from .dnssec import DNSSECAPI
+from .ssl import SSLAPI
+from .notes import NotesAPI
 
 class DNSZoneAPI:
 
@@ -23,6 +27,10 @@ class DNSZoneAPI:
         self.park = ParkedAPI(self._auth_params, self.make_request)
         self.cloud = CloudDomainAPI(self._auth_params, self.make_request)
         self.geodns = GeoDNSAPI(self._auth_params, self.make_request)
+        self.groups = GroupsAPI(self._auth_params, self.make_request)
+        self.dnssec = DNSSECAPI(self._auth_params, self.make_request)
+        self.ssl = SSLAPI(self._auth_params, self.make_request)
+        self.notes = NotesAPI(self._auth_params, self.make_request)
 
 
     def get_available_name_servers(self, detailed_info=0):

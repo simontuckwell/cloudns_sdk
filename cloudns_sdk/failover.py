@@ -1,11 +1,14 @@
 
-
+from .notification import FailoverNotificationAPI
 
 
 class FailoverAPI:
     def __init__(self, auth_params, make_request):
         self._auth_params = auth_params
         self.make_request = make_request
+
+        self.notification = FailoverNotificationAPI(self._auth_params, self.make_request)
+
 
 
     def get_failover_settings(self, domain_name, record_id):
