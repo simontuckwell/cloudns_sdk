@@ -1,7 +1,7 @@
 """
 ClouDNSAPI: Python wrapper for the ClouDNS API.
 
-Author: Komal Paudyal
+Author: Komal Paudyal ||
 Email: komal.paudyal@icloud.com
 
 This module provides a Python interface to interact with the ClouDNS API.
