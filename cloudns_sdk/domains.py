@@ -19,41 +19,92 @@ class DomainNameAPI:
         auth_password (str): Authentication password associated with auth_id.
 
     Methods:
-        get_available_name_servers(detailed_info=0):
-            Retrieves available name servers.
+        check_domain_available(name, tld):
+            Retrieves domain name availability.
 
-        register_domain_zone(domain_name, zone_type, ns=None, master_ip=None):
-            Registers a new DNS zone.
+        pricing_list():
+            Retrieves domain name pricing information.
 
-        delete_domain_zone(domain_name):
-            Deletes a DNS zone.
+        register_domain(domain_name, tld, period, mail,
+                        name, address, city, state, zip, country, telnocc, telno,
+                        nameservers, intended_use=None, company=None, faxnocc=None, faxno=None,
+                        registrant_type=None, registrant_type_id=None, registrant_policy=None,
+                        birth_date=None, birth_cc=None, birth_city=None, birth_zip=None,
+                        publication=None, vat=None, siren=None, duns=None, trademark=None,
+                        waldec=None, registrant_type_other=None, privacy_protection=None,
+                        code=None, publicity=None, kpp=None, passport_number=None,
+                        passport_issued_by=None, passport_issued_on=None,
+                        organization_authority=None, organization_create_date=None,
+                        aero_id=None, aero_key=None, registrant_title=None,
+                        bank_bic=None, bank_name=None, bank_iban=None):
+            Registers a new domain name.
 
-        list_zones(page=1, rows_per_page=20, search=None, group_id=None, has_cloud_domains=None):
-            Lists DNS zones with optional filters.
+        renew_domain(domain_name, period):
+            Renews a DNS zone.
 
-        get_pages_count(rows_per_page=10, search=None, group_id=None, has_cloud_domains=None):
-            Retrieves the number of pages of DNS zones.
+        transfer_domain(domain_name, tld, period, mail,
+                        name, address, city, state, zip, country, telnocc, telno,
+                        nameservers, intended_use=None, company=None, faxnocc=None, faxno=None,
+                        registrant_type=None, registrant_type_id=None, registrant_policy=None,
+                        birth_date=None, birth_cc=None, birth_city=None, birth_zip=None,
+                        publication=None, vat=None, siren=None, duns=None, trademark=None,
+                        waldec=None, registrant_type_other=None, privacy_protection=None,
+                        code=None, publicity=None, kpp=None, passport_number=None,
+                        passport_issued_by=None, passport_issued_on=None,
+                        organization_authority=None, organization_create_date=None,
+                        aero_id=None, aero_key=None, registrant_title=None,
+                        bank_bic=None, bank_name=None, bank_iban=None):
+            Transfers domain name.
 
-        get_zones_stats():
-            Retrieves statistics for all zones.
+        list_domains(page=1, rows_per_page=10, search=None, order_by=None):
+            List registered domains with optional filters.
 
-        get_zone_info(domain_name):
-            Retrieves information about a specific DNS zone.
+        get_pages_count(rows_per_page=10, search=None):
+            Retrieves the number of pages of registered domains based on optional filters.
 
-        update_zone(domain_name):
-            Updates an existing DNS zone.
+        get_domain_info(domain_name):
+            Retrieves information about a specific domain name.
 
-        get_update_status(domain_name):
-            Retrieves the update status of a DNS zone.
+        get_domain_contacts(domain_name):
+            Retrieves a specific domain name's contacts.
 
-        is_updated(domain_name):
-            Checks if a DNS zone is updated.
+        modify_domain_contact(domain_name, type, mail, name, company,
+                              address, city, state, zip, country,
+                              telnocc, telno, faxnocc=None, faxno=None):
+            Changes a specific domain name's contacts.
 
-        change_zone_status(domain_name, status=True):
-            Changes the status of a DNS zone.
+        get_domain_nameservers(domain_name):
+            Retrieves a specific domain name's name servers.
 
-        get_records_stats():
-            Retrieves statistics for DNS records across all zones.
+        set_domain_nameservers(domain_name, nameservers):
+            Retrieves a specific domain name's name servers.
+
+        get_domain_child_nameservers(domain_name):
+            Retrieves a domain name's child name servers.
+
+        add_domain_child_nameserver(domain_name, host, ip):
+            Adds a child name server (Glue record) to a domain name.
+
+        delete_domain_child_nameserver(domain_name, host, ip):
+            Deletes a child name server from a domain name.
+
+        modify_domain_child_nameserver(domain_name, host, old_ip, new_ip):
+            Update a child name server for a domain name.
+
+        modify_domain_privacy_protection(domain_name, status):
+            Modifies the privacy protection of the domain.
+
+        modify_domain_transfer_lock(domain_name, status):
+            Modifies the transfer lock of the domain.
+
+        get_domain_transfer_code(domain_name):
+            Retrieves a specific domain name's transfer code.
+
+        get_domain_raa_status(domain_name):
+            Retrieves a specific domain name's RAA contact information status.
+
+        resend_domain_raa_verification(domain_name):
+            Resend the verification e-mail to the domain's administrative contact.
 
     """
     def __init__(self, auth_params, make_request, auth_id, auth_password):
@@ -340,7 +391,7 @@ class DomainNameAPI:
 
         return self.make_request('domains/order-transfer-domain.json', method='POST', data=params)
 
-    def list_domains(self, page=1, rows_per_page=250, search=None, order_by=None):
+    def list_domains(self, page=1, rows_per_page=10, search=None, order_by=None):
         """
         List registered domains with optional filters.
 
