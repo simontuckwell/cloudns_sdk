@@ -11,6 +11,7 @@ import requests
 from .rate_limit import rate_limited
 from .exceptions import ClouDNSAPIException
 from .failover import FailoverAPI
+from .domains import DomainNameAPI
 from .zone import DNSZoneAPI
 
 class ClouDNSAPI:
@@ -29,6 +30,7 @@ class ClouDNSAPI:
         self.auth_password = auth_password
         self.failover = FailoverAPI(self._auth_params, self.make_request)
         self.zone = DNSZoneAPI(self._auth_params, self.make_request, self.auth_id, self.auth_password)
+        self.domains = DomainNameAPI(self._auth_params, self.make_request, self.auth_id, self.auth_password)
 
     @rate_limited(RATE_LIMIT_PER_SECOND)
     def make_request(self, endpoint, method='GET', params=None, data=None):
